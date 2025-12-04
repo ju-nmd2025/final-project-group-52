@@ -1,34 +1,43 @@
+// character.js
 export default class Character {
+  constructor(x, y, w, h) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
 
-    constructor(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-    }
+    this.vx = 0;
+    this.vy = 0;
 
-    draw() {
-        rect(this.x, this.y, this.w, this.h);
-    }
+    this.gravity = 0.5;
+    this.jumpStrength = -11;
 
-    isColliding(character, platform) {
-        // If character was passed in, use it. Otherwise use this instance.
-        const c = character || this;
+    this.moveLeft = false;
+    this.moveRight = false;
+  }
 
-        const cLeft   = c.x;
-        const cRight  = c.x + c.w;
-        const cTop    = c.y;
-        const cBottom = c.y + c.h;
+  update() {
+    const speed = 4;
+    if (this.moveLeft && !this.moveRight) this.vx = -speed;
+    else if (this.moveRight && !this.moveLeft) this.vx = speed;
+    else this.vx = 0;
 
-        const pLeft   = platform.x;
-        const pRight  = platform.x + platform.w;
-        const pTop    = platform.y;
-        const pBottom = platform.y + platform.h;
+    this.vy += this.gravity;
+    this.x += this.vx;
+    this.y += this.vy;
 
-        // AABB collision detection 
-        const horizontalOverlap = cRight > pLeft && cLeft < pRight;
-        const verticalOverlap   = cBottom > pTop && cTop < pBottom;
+    // horizontal wrap
+    if (this.x > width) this.x = -this.w;
+    if (this.x + this.w < 0) this.x = width;
+  }
 
-        return horizontalOverlap && verticalOverlap;
-    }
+  jump() {
+    this.vy = this.jumpStrength;
+  }
+
+  draw() {
+    rectMode(CORNER);
+    fill(255, 230, 80);
+    rect(this.x, this.y, this.w, this.h, 10);
+  }
 }
