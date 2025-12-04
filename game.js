@@ -1,8 +1,20 @@
-import platform from "platform";
-import { Character } from "./character";
+import Platform from "./platform.js";
+import Character from "./character.js";
+
+// Canvas size and game variables
+let canvasWidth = 400;
+let canvasHeight = 400;
+let floor = 300;
+
+let character;
+let platform;
 
 function setup() {
     createCanvas(canvasWidth, canvasHeight);
+
+    // Create the character and a single platform
+    character = new Character(50, 50, 50, 50);   
+    platform  = new Platform(300, 260, 100, 20); 
 }
 
 // Obstacle / Spike / Death
@@ -13,27 +25,26 @@ function drawObstacle() {
     pop();
 }
 
-let canvasWidth = 400;
-let canvasHeight = 400;
-let floor = 300;
-let character = new Character(50, 50, 50, 50);
-
 function draw() {
     background(100, 100, 100);
 
+    // Draw character and platform
     character.draw();
     platform.draw();
+   
 
-    platform.x -= 10;
+    // Move the platform to the left
+    platform.x -= 4;
     if (platform.x + platform.w < 0) {
-        platform.x = 500;
+        platform.x = canvasWidth + 100; // reset off screen to the right
     }
 
+    // Gravity, character falls if above floor and not colliding with platform
     if (
-        character.y + character.h < 300 &&
+        character.y + character.h < floor &&
         !character.isColliding(character, platform)
     ) {
-        character.y += 10;
+        character.y += 5;
     }
 
     // Floor
@@ -41,7 +52,11 @@ function draw() {
 }
 
 function keyPressed() {
-    if (character.y + character.h === floor || character.isColliding(character, platform)) {
+    // Simple jump, only jump if standing on floor or on platform
+    if (
+        character.y + character.h === floor ||
+        character.isColliding(character, platform)
+    ) {
         character.y -= 120;
     }
 }
