@@ -1,4 +1,4 @@
-// platform.js
+
 class Platform {
   constructor(x, y, w = 80, h = 15) {
     this.x = x;

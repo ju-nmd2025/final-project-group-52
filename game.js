@@ -224,3 +224,5 @@ function keyPressed() {
 function keyReleased() {
   game.handleKeyReleased(keyCode);
 }
+
+export { Game };
