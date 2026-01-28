@@ -7,13 +7,13 @@ class Platform {
     this.h = h;
   }
 
+  // Moves the platform vertically
   update(offsetY) {
     this.y += offsetY;
   }
 
-  extraUpdate() {
-    // default: do nothing
-  }
+  //safety placeholder, allows to call extraUpdate() on every platform in a loop without the game crashing
+  extraUpdate() {}
 
   draw() {
     rectMode(CORNER);
@@ -21,6 +21,7 @@ class Platform {
     rect(this.x, this.y, this.w, this.h, 5);
   }
 
+  // Main logic to check if the player landed on the platform from above
   collidesWith(player) {
     const isFallingDown = player.vy > 0;
 
@@ -29,6 +30,7 @@ class Platform {
     const playerLeft = player.x;
     const playerRight = player.x + player.w;
 
+    // Checks if player is horizontally aligned and was above the platform in the last frame
     const withinX = playerRight > this.x && playerLeft < this.x + this.w;
     const feetAbovePlatformLastFrame = playerBottom - player.vy <= this.y;
     const feetNowOnPlatform =
@@ -37,30 +39,36 @@ class Platform {
     return isFallingDown && withinX && feetAbovePlatformLastFrame && feetNowOnPlatform;
   }
 
+  // Checks if the platform has fallen off the bottom of the screen
   isGone() {
     return this.y > height + 50;
   }
 }
 
+// standard platform with no special movement or behavior
 class NormalPlatform extends Platform {
   constructor(x, y) {
     super(x, y);
   }
 }
 
+// platform that slides horizontally and bounces off walls
 class MovingPlatform extends Platform {
   constructor(x, y) {
     super(x, y);
+    // Picks a random starting speed and direction
     this.speedX = random(1, 2.5) * (random() < 0.5 ? -1 : 1);
   }
 
+  // Handles the left to right movement logic
   extraUpdate() {
     this.x += this.speedX;
     if (this.x < 0 || this.x + this.w > width) {
-      this.speedX *= -1;
+      this.speedX *= -1; // Bounce back
     }
   }
 
+  // draws the moving platform with a blue color
   draw() {
     rectMode(CORNER);
     fill(120, 180, 255);
@@ -68,6 +76,7 @@ class MovingPlatform extends Platform {
   }
 }
 
+// platform that breaks and falls away when stepped on
 class BreakingPlatform extends Platform {
   constructor(x, y) {
     super(x, y);
@@ -75,22 +84,26 @@ class BreakingPlatform extends Platform {
     this.fallSpeed = 3;
   }
 
+  // Triggers the breaking state
   break() {
     this.isBroken = true;
   }
 
+  // falling animation once the platform is broken
   extraUpdate() {
     if (this.isBroken) {
       this.y += this.fallSpeed;
-      this.fallSpeed += 0.2;
+      this.fallSpeed += 0.2; // Gravity effect strength
     }
   }
 
+  // Stops collisions if the platform is already broken
   collidesWith(player) {
     if (this.isBroken) return false;
     return super.collidesWith(player);
   }
 
+  // Draws a red platform, draws it in two pieces if broken
   draw() {
     rectMode(CORNER);
     if (!this.isBroken) {
@@ -98,6 +111,7 @@ class BreakingPlatform extends Platform {
       rect(this.x, this.y, this.w, this.h, 5);
     } else {
       fill(180, 80, 80);
+      // Splits the platform visually into two broken pieces
       rect(this.x, this.y, this.w / 2 - 2, this.h, 3);
       rect(this.x + this.w / 2 + 2, this.y, this.w / 2 - 2, this.h, 3);
     }
