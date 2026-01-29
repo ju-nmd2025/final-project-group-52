@@ -1,19 +1,18 @@
 import Character from "./character.js";
 import { NormalPlatform, MovingPlatform, BreakingPlatform } from "./platform.js";
 
-
+// Initialize game properties and default state
 class Game {
   constructor() {
-    this.player = null;        // Character instance
-    this.platforms = [];       // array of platforms
+    this.player = null;       
+    this.platforms = [];       
     this.score = 0;
-    this.state = "start";      // "start", "playing", "gameover"
+    this.state = "start";      
     this.bestScore = 0;
   }
 
-  
+  // Reset all variables for a fresh game session
   startNewRun() {
-    // Use your Character class instead of Player
     this.player = new Character(width / 2 - 20, height - 100, 40, 40);
     this.platforms = [];
     this.score = 0;
@@ -21,6 +20,7 @@ class Game {
     const platformCount = 10;
     const spacing = height / platformCount;
 
+    // Initial platform generation
     for (let i = 0; i < platformCount; i++) {
       const x = random(40, width - 120);
       const y = height - i * spacing;
@@ -28,7 +28,7 @@ class Game {
     }
   }
 
-  // create random type of platform
+  // Logic to determine which platform type to spawn
   _createRandomPlatform(x, y, forceNormal = false) {
     if (forceNormal) {
       return new NormalPlatform(x, y);
@@ -45,12 +45,13 @@ class Game {
     }
   }
 
+  // Main update loop for physics, collisions, and movement
   update() {
     if (this.state !== "playing") return;
 
     this.player.update();
 
-    // camera scrolling upwards
+    // Camera scrolling, Move world down if player goes too high
     const cameraThreshold = height * 0.4;
     let offsetY = 0;
 
@@ -60,18 +61,17 @@ class Game {
 
       this.score += offsetY;
 
-      // scroll platforms down
       for (let p of this.platforms) {
         p.update(offsetY);
       }
     }
 
-    // extra behaviour (moving + breaking fall)
+    // Extra platform behavior, side to side movement
     for (let p of this.platforms) {
       p.extraUpdate();
     }
 
-    // collisions
+    // collisions detection
     for (let p of this.platforms) {
       if (p.collidesWith(this.player)) {
         this.player.jump();
@@ -81,7 +81,7 @@ class Game {
       }
     }
 
-    // remove off-screen platforms
+    // remove off screen platforms
     this.platforms = this.platforms.filter(p => !p.isGone());
 
     // spawn new platforms
@@ -99,6 +99,7 @@ class Game {
     }
   }
 
+  // Master draw function to handle screen switching
   draw() {
     background(160, 210, 255);
 
@@ -112,6 +113,7 @@ class Game {
     }
   }
 
+  // Draw the actual active game elements
   drawGamePlay() {
     // draw platforms
     for (let p of this.platforms) {
@@ -121,7 +123,7 @@ class Game {
     // draw player
     this.player.draw();
 
-    // UI
+    // Draw UI, Scoreboard
     fill(0);
     noStroke();
     textAlign(LEFT, TOP);
@@ -130,6 +132,7 @@ class Game {
     text("Best: " + this.bestScore, 10, 30);
   }
 
+  // Draw the initial landing menu
   drawStartScreen() {
     noStroke();
     fill(255, 255, 255, 80);
@@ -147,6 +150,7 @@ class Game {
     text("Press SPACE or ENTER to start", width / 2, height / 2 + 40);
   }
 
+  // Draw the overlay when the player loses
   drawGameOverScreen() {
     fill(0, 0, 0, 160);
     rectMode(CORNER);
@@ -165,6 +169,7 @@ class Game {
     text("Press R or ENTER to play again", width / 2, height / 2 + 70);
   }
 
+  // Manage key presses for menus and movement
   handleKeyPressed(keyCode) {
     if (this.state === "start") {
       if (keyCode === 32 || keyCode === ENTER) { // SPACE or ENTER
@@ -191,6 +196,7 @@ class Game {
     }
   }
 
+  // Stop movement when keys are released
   handleKeyReleased(keyCode) {
     if (this.state !== "playing") return;
 
@@ -204,7 +210,6 @@ class Game {
 }
 
 //p5 integration
-
 let game;
 
 function setup() {
