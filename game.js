@@ -55,12 +55,14 @@ class Game {
     const cameraThreshold = height * 0.4;
     let offsetY = 0;
 
+    // lock the players position to threshold and calculate the sscroll distance to move down the world
     if (this.player.y < cameraThreshold) {
       offsetY = cameraThreshold - this.player.y;
       this.player.y = cameraThreshold;
 
       this.score += offsetY;
 
+      // loop thru every platform object in the collection, move each platform down by offsetY amount
       for (let p of this.platforms) {
         p.update(offsetY);
       }
@@ -85,16 +87,26 @@ class Game {
     this.platforms = this.platforms.filter(p => !p.isGone());
 
     // spawn new platforms
+    // infinite level generatin, so that there are always at least 12 platforms above the player
     while (this.platforms.length < 12) {
+
+      // find the highest platforms Y value to use as a starting point
       const highestY = Math.min(...this.platforms.map(p => p.y));
+
+      //  calculates random values for new plattforms
       const newY = highestY - random(60, 100);
       const newX = random(30, width - 110);
+
+      // generates and adds new platform to the collection
       this.platforms.push(this._createRandomPlatform(newX, newY));
     }
 
     // game over
+    // checks if player y value is greater then screen size
     if (this.player.y > height) {
       this.state = "gameover";
+
+      // compares best score and new score, stores the highest score
       this.bestScore = max(this.bestScore, floor(this.score));
     }
   }
