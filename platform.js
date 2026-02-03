@@ -15,6 +15,7 @@ class Platform {
   //safety placeholder, allows to call extraUpdate() on every platform in a loop without the game crashing
   extraUpdate() {}
 
+  // drwa the standard plattform
   draw() {
     rectMode(CORNER);
     fill(120, 240, 120);
@@ -23,8 +24,10 @@ class Platform {
 
   // Main logic to check if the player landed on the platform from above
   collidesWith(player) {
+    // Only register a landing if the player is moving downwards
     const isFallingDown = player.vy > 0;
 
+    // defines the players boundries (hitbox) for easier collision calculations
     const playerBottom = player.y + player.h;
     const playerTop = player.y;
     const playerLeft = player.x;
@@ -33,8 +36,7 @@ class Platform {
     // Checks if player is horizontally aligned and was above the platform in the last frame
     const withinX = playerRight > this.x && playerLeft < this.x + this.w;
     const feetAbovePlatformLastFrame = playerBottom - player.vy <= this.y;
-    const feetNowOnPlatform =
-      playerBottom >= this.y && playerBottom <= this.y + this.h;
+    const feetNowOnPlatform = playerBottom >= this.y && playerBottom <= this.y + this.h;
 
     return isFallingDown && withinX && feetAbovePlatformLastFrame && feetNowOnPlatform;
   }
@@ -63,6 +65,8 @@ class MovingPlatform extends Platform {
   // Handles the left to right movement logic
   extraUpdate() {
     this.x += this.speedX;
+    
+    // Check for screen boundary collisions
     if (this.x < 0 || this.x + this.w > width) {
       this.speedX *= -1; // Bounce back
     }

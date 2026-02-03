@@ -191,6 +191,7 @@ class Game {
       return;
     }
 
+    // game over input, allows you to restart game
     if (this.state === "gameover") {
       if (keyCode === 82 || keyCode === ENTER) { // R or ENTER
         this.startNewRun();
@@ -199,11 +200,11 @@ class Game {
       return;
     }
 
-    // playing
-    if (keyCode === LEFT_ARROW || keyCode === 65) {
+    // playing keys pressed
+    if (keyCode === LEFT_ARROW || keyCode === 65) { // left arrow or "A"
       this.player.moveLeft = true;
     }
-    if (keyCode === RIGHT_ARROW || keyCode === 68) {
+    if (keyCode === RIGHT_ARROW || keyCode === 68) { // right arrow or "D"
       this.player.moveRight = true;
     }
   }
